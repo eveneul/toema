@@ -22,17 +22,13 @@ vi.mock('notistack', async () => {
   };
 });
 
-
 it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
-
   const { result } = renderHook(() => useEventOperations(false));
 
   expect(result.current.events).toEqual([]);
-
 });
 
 it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
-
   setupMockHandlerCreation();
   const { result } = renderHook(() => useEventOperations(false));
 
@@ -56,8 +52,6 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
 
   expect(result.current.events).toHaveLength(1);
   expect(result.current.events[0].title).toBe('2주차 회의');
-
-
 });
 
 it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {
@@ -84,8 +78,6 @@ it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업�
 
   expect(result.current.events[0].title).toBe('추가 회의');
   expect(result.current.events[0].endTime).toBe('12:00');
-
-
 });
 
 it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {
@@ -114,7 +106,6 @@ it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', 
   expect(result.current.events).toHaveLength(1);
   expect(result.current.events[0].title).toBe('2주차 회의');
 
-
   setupMockHandlerDeletion();
 
   // 상태 변경 후 실행
@@ -123,7 +114,6 @@ it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', 
   });
 
   expect(result.current.events).toEqual([]);
-
 });
 
 it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {
@@ -131,7 +121,7 @@ it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함
   server.use(
     http.get('/api/events', () => {
       return HttpResponse.error();
-    }),
+    })
   );
 
   const { result } = renderHook(() => useEventOperations(false));
@@ -142,12 +132,9 @@ it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함
   });
 
   expect(enqueueSnackbarFn).toHaveBeenCalledWith('이벤트 로딩 실패', { variant: 'error' });
-
-
 });
 
 it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
-
   const { result } = renderHook(() => useEventOperations(true));
   const updateEvent: EventForm = {
     id: '4',
@@ -162,21 +149,19 @@ it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스
     notificationTime: 10,
   };
 
-
   // 상태 변경 후 실행
   await act(async () => {
     result.current.saveEvent(updateEvent);
   });
 
   expect(enqueueSnackbarFn).toHaveBeenCalledWith('일정 저장 실패', { variant: 'error' });
-
 });
 
 it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {
   server.use(
     http.delete('/api/events/:id', () => {
       return HttpResponse.error();
-    }),
+    })
   );
 
   const { result } = renderHook(() => useEventOperations(true));
@@ -186,7 +171,4 @@ it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되�
   });
 
   expect(enqueueSnackbarFn).toHaveBeenCalledWith('일정 삭제 실패', { variant: 'error' });
-
-
 });
-

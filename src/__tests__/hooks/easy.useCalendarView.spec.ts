@@ -61,7 +61,6 @@ it("주간 뷰에서 이전으로 navigate시 7일 후 '2025-09-24' 날짜로 �
   });
 
   expect(result.current.currentDate.toISOString().slice(0, 10)).toEqual('2025-09-24');
-
 });
 
 it("월간 뷰에서 다음으로 navigate시 한 달 후 '2025-11-01' 날짜여야 한다", () => {
@@ -69,7 +68,7 @@ it("월간 뷰에서 다음으로 navigate시 한 달 후 '2025-11-01' 날짜여
 
   act(() => {
     result.current.navigate('next');
-  })
+  });
 
   expect(result.current.currentDate.toISOString().slice(0, 10)).toEqual('2025-11-01');
 });
@@ -94,6 +93,6 @@ it("currentDate가 '2025-03-01' 변경되면 3월 휴일 '삼일절'로 업데�
   });
 
   expect(result.current.holidays).toEqual({
-    '2025-03-01': '삼일절'
+    '2025-03-01': '삼일절',
   });
 });

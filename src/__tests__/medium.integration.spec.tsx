@@ -2,6 +2,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { render, screen, within, act, waitFor } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
+import { wait } from '@testing-library/user-event/dist/cjs/utils/index.js';
 import { http, HttpResponse } from 'msw';
 import { SnackbarProvider } from 'notistack';
 import { ReactElement } from 'react';
@@ -14,7 +15,6 @@ import {
 import App from '../App';
 import { server } from '../setupTests';
 import { Event } from '../types';
-import { wait } from '@testing-library/user-event/dist/cjs/utils/index.js';
 
 const theme = createTheme();
 
@@ -77,12 +77,10 @@ describe('일정 CRUD 및 기본 기능', () => {
     const { user } = setup(<App />);
     await saveSchedule(user, newEvent);
     await waitFor(() => {
-
       const eventTitle = within(screen.getByRole('table')).getByText('회식');
       expect(eventTitle).toBeInTheDocument();
     });
   });
-
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
     setupMockHandlerUpdating();
@@ -124,7 +122,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     // 검색어 삭제안하고 하려니 eventList를 못불러오는 이슈
     await user.clear(searchInput);
 
-    // 삭제되는 작업 
+    // 삭제되는 작업
     await waitFor(() => {
       expect(eventList.queryByText('검색 결과가 없습니다.')).not.toBeInTheDocument();
     });
@@ -222,7 +220,6 @@ describe('일정 뷰', () => {
 
     const eventList = within(screen.getByTestId('event-list'));
     expect(eventList.getByText('독서모임')).toBeInTheDocument();
-
   });
 
   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
@@ -238,7 +235,6 @@ describe('일정 뷰', () => {
 
     const holidays = screen.getByTestId('month-view');
     expect(within(holidays).getByText('신정')).toBeInTheDocument();
-
   });
 });
 
@@ -281,30 +277,32 @@ describe('검색 기능', () => {
   });
 
   it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
-    const mockEvent: Event[] = [{
-      id: '8',
-      title: '팀 회의',
-      date: '2025-10-20',
-      startTime: '11:00',
-      endTime: '15:00',
-      description: '월간 회의',
-      location: '2층 강당',
-      category: '업무',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 1,
-    },
-    {
-      id: '9',
-      title: '협업',
-      date: '2025-10-24',
-      startTime: '14:00',
-      endTime: '15:00',
-      description: '보고회',
-      location: '회의실 A',
-      category: '업무',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 1,
-    }];
+    const mockEvent: Event[] = [
+      {
+        id: '8',
+        title: '팀 회의',
+        date: '2025-10-20',
+        startTime: '11:00',
+        endTime: '15:00',
+        description: '월간 회의',
+        location: '2층 강당',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      },
+      {
+        id: '9',
+        title: '협업',
+        date: '2025-10-24',
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '보고회',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      },
+    ];
 
     vi.useFakeTimers().setSystemTime('2025-10-22');
     setupMockHandlerCreation(mockEvent);
@@ -352,34 +350,34 @@ describe('일정 충돌', () => {
     await user.click(screen.getByTestId('event-submit-button'));
 
     expect(screen.getByText('일정 겹침 경고')).toBeInTheDocument();
-
   });
 
   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
-    const mockEvent: Event[] = [{
-      id: '11',
-      title: '1팀 회의',
-      date: '2025-10-20',
-      startTime: '11:00',
-      endTime: '15:00',
-      description: '월간 회의',
-      location: '2층 대회의실',
-      category: '업무',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 1,
-    },
-    {
-      id: '12',
-      title: '3팀 회의',
-      date: '2025-10-20',
-      startTime: '16:00',
-      endTime: '18:00',
-      description: '월간 회의',
-      location: '3층 대회의실',
-      category: '업무',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 1,
-    }
+    const mockEvent: Event[] = [
+      {
+        id: '11',
+        title: '1팀 회의',
+        date: '2025-10-20',
+        startTime: '11:00',
+        endTime: '15:00',
+        description: '월간 회의',
+        location: '2층 대회의실',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      },
+      {
+        id: '12',
+        title: '3팀 회의',
+        date: '2025-10-20',
+        startTime: '16:00',
+        endTime: '18:00',
+        description: '월간 회의',
+        location: '3층 대회의실',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      },
     ];
 
     vi.useFakeTimers().setSystemTime('2025-10-22');
